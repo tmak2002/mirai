@@ -1069,7 +1069,7 @@ src_configure() {
 	fi
 
 	if use replace-malloc; then
-		mozconfig_add_options_mk '--enable-replace-malloc'
+		mozconfig_add_options_ac 'enable-replace-malloc' --enable-replace-malloc
 	fi
 
 	mozconfig_use_enable test tests
