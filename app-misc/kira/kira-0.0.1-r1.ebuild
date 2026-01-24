@@ -4,17 +4,17 @@
 EAPI=8
 
 DESCRIPTION="Torben's meta"
-
+HOMEPAGE="https://github.com/tmak2002/mirai"
 LICENSE="metapackage"
 SLOT="0"
-KEYWORDS="amd64 arm64 ~loong ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64"
 IUSE="bin"
 
 RDEPEND="
-    bin? (
-        www-client/firefox-bin
-    )
-    !bin? (
-        www-client/firefox
-    )
+	bin? (
+		www-client/firefox-bin
+	)
+	!bin? (
+		www-client/firefox
+	)
 "
