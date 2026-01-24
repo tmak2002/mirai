@@ -11,6 +11,9 @@ KEYWORDS="amd64"
 IUSE="bin"
 
 RDEPEND="
+	x11-terms/alacritty
+	app-admin/keepassxc
+	net-p2p/syncthing
 	bin? (
 		app-office/libreoffice-bin
 		mail-client/thunderbird-bin
