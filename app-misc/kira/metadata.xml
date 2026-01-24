@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="project">
+		<email>tmak2002.dev</email>
+		<name>Torben Kahnert</name>
+	</maintainer>
+	<use>
+		<flag name="bin">Enable bin variants of packages</flag>
+	</use>
+</pkgmetadata>
