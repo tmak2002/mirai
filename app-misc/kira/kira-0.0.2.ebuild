@@ -12,9 +12,11 @@ IUSE="bin"
 
 RDEPEND="
 	bin? (
+		mail-client/thunderbird-bin
 		www-client/firefox-bin
 	)
 	!bin? (
+		mail-client/thunderbird
 		www-client/firefox
 	)
 "
