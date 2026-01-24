@@ -14,6 +14,7 @@ RDEPEND="
 	x11-terms/alacritty
 	app-admin/keepassxc
 	net-p2p/syncthing
+	app-editors/vscodium
 	bin? (
 		app-office/libreoffice-bin
 		mail-client/thunderbird-bin
