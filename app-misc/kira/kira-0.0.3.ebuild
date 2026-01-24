@@ -12,10 +12,12 @@ IUSE="bin"
 
 RDEPEND="
 	bin? (
+		app-office/libreoffice-bin
 		mail-client/thunderbird-bin
 		www-client/firefox-bin
 	)
 	!bin? (
+		app-office/libreoffice
 		mail-client/thunderbird
 		www-client/firefox
 	)
