@@ -1,0 +1,10 @@
+DEFINED_PHASES=-
+DESCRIPTION=Torben's meta
+EAPI=8
+HOMEPAGE=https://github.com/tmak2002/mirai
+IUSE=bin
+KEYWORDS=amd64
+LICENSE=metapackage
+RDEPEND=bin? ( www-client/firefox-bin ) !bin? ( www-client/firefox )
+SLOT=0
+_md5_=1ca19231ffba89bfc9f11b48316add24
