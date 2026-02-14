@@ -20,7 +20,7 @@ KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86 ~x64-macos"
 RESTRICT="test"
 
 RDEPEND="
-	>=app-admin/ansible-core-2.20.0
+	>=app-admin/ansible-core-2.20.2
 	<app-admin/ansible-core-2.21.0
 "
 
