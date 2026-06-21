@@ -1,0 +1,14 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -34,7 +34,10 @@ find_package(KSysGuard ${PROJECT_DEP_VERSION} REQUIRED)
+ 
+ # there's no NetworkManager on FreeBSD'
+ if (LINUX)
+-    find_package(KF6NetworkManagerQt ${KF6_MIN_VERSION} CONFIG REQUIRED)
++    option(WITH_NETWORKMANAGER "Build with NetworkManager support" ON)
++    if(WITH_NETWORKMANAGER)
++        find_package(KF6NetworkManagerQt ${KF6_MIN_VERSION} CONFIG REQUIRED)
++    endif()
+ endif()
+ 
+ add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
