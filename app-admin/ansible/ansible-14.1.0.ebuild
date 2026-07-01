@@ -21,7 +21,7 @@ RESTRICT="test"
 
 RDEPEND="
 	>=app-admin/ansible-core-2.20.0
-	<app-admin/ansible-core-2.21.0
+	<app-admin/ansible-core-2.21.1
 "
 
 python_compile() {
