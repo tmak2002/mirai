@@ -1,74 +1,118 @@
-# Copyright 2022-2026 Gentoo Authors
-# Distributed under the terms of the GNU General Public License v3
-
+# Copyright 2026 Nadeŭka <me+oss@nadevko.cc>
+# Distributed under the terms of the GNU General Public License v2
 EAPI=8
 
-inherit desktop unpacker xdg
+inherit desktop pax-utils unpacker xdg
 
-DESCRIPTION="Cisco's packet tracer"
-HOMEPAGE="https://www.netacad.com/resources/lab-downloads"
-SRC_URI="CiscoPacketTracer_901_Ubuntu_64bit.deb"
+DESCRIPTION='Cisco PacketTracer'
+HOMEPAGE=https://www.netacad.com/cisco-packet-tracer
+SRC_URI=CiscoPacketTracer_${PV//./}_Ubuntu_64bit.deb
+S="${WORKDIR}"/squashfs-root
 
-S="${WORKDIR}"
+LICENSE='Cisco-EULA Cisco-PT Cisco-PT-SEULA'
+SLOT=$(ver_cut 1)
+KEYWORDS='~amd64'
 
-LICENSE="Cisco"
-SLOT="0"
-KEYWORDS="~amd64"
-RESTRICT="fetch mirror strip"
+RESTRICT='bindist fetch strip'
 
-RDEPEND="
+QA_PREBUILT="opt/${PN}-${SLOT}/*"
+
+RDEPEND='
+	app-arch/brotli
+	app-arch/libdeflate
+	app-arch/zstd
 	dev-libs/expat
 	dev-libs/glib:2
-	dev-libs/icu
-	dev-libs/libxml2
-	dev-libs/libxslt
+	dev-libs/libinput
+	dev-libs/libpcre2[pcre16]
 	dev-libs/nspr
 	dev-libs/nss
 	dev-libs/wayland
-	media-libs/alsa-lib
 	media-libs/fontconfig
-	media-libs/freetype
-	media-libs/libglvnd[X]
+	media-libs/harfbuzz
+	media-libs/jbigkit
+	media-libs/libpng
 	media-libs/libpulse
 	sys-apps/dbus
-	virtual/udev
+	sys-libs/mtdev
+	virtual/libudev
+	virtual/opengl
+	x11-libs/libdrm
 	x11-libs/libICE
 	x11-libs/libSM
 	x11-libs/libX11
+	x11-libs/libxcb
 	x11-libs/libXcomposite
 	x11-libs/libXdamage
 	x11-libs/libXext
 	x11-libs/libXfixes
+	x11-libs/libxkbcommon[X]
+	x11-libs/libxkbfile
 	x11-libs/libXrandr
 	x11-libs/libXtst
-	x11-libs/libdrm
-	x11-libs/libxcb
-	x11-libs/libxkbcommon
-	x11-libs/xcb-util
+	x11-libs/tslib
+	x11-libs/xcb-util-cursor
 	x11-libs/xcb-util-image
 	x11-libs/xcb-util-keysyms
 	x11-libs/xcb-util-renderutil
 	x11-libs/xcb-util-wm
-"
+'
+BDEPEND=dev-util/patchelf
 
-QA_PREBUILT="opt/pt/*"
-
-pkg_nofetch(){
-	ewarn "To fetch sources, you need a Cisco account which is"
-	ewarn "available if you're a web-learning student, instructor"
-	ewarn "or you sale Cisco hardware, etc."
-	ewarn "after that, go to https://www.netacad.com/resources/lab-downloads and login with"
-	ewarn "your account, and after that, you should download a file"
-	ewarn "named \"${A}\" then move it to"
-	ewarn "your DISTDIR directory"
-	ewarn "and then, you can proceed with the installation."
+pkg_nofetch() {
+	einfo "Please log in & download ${SRC_URI} from:"
+	einfo '  https://www.netacad.com/resources/lab-downloads'
+	einfo 'and place it into your DISTDIR directory.'
 }
 
-src_install(){
-	cp -r . "${ED}" || die
-	for icon in pka pkt pkz; do
-		newicon -s 48x48 -c mimetypes opt/pt/art/${icon}.png application-x-${icon}.png
+src_unpack() {
+	unpack_deb "${SRC_URI}"
+	./opt/pt/packettracer.AppImage --appimage-extract ||
+		die 'Failed to extract packettracer.AppImage'
+}
+
+src_prepare() {
+	default
+	patchelf --replace-needed libjbig.so.0 libjbig.so \
+		"${S}"/usr/lib/libtiff.so.5 || die
+}
+
+src_install() {
+	local PNS=${PN}-${SLOT}
+
+	# /opt
+	dodir /opt/${PNS}
+	cp -Rp opt/pt/* "${ED}"/opt/${PNS} ||
+		die 'Failed to install core files to /opt'
+	exeinto /opt/${PNS}/bin
+	doexe usr/lib/{libjpeg.so.8,libtiff.so.5}
+	rm "${ED}"/opt/${PNS}/{linguist,packettracer} || die
+
+	# bins & wrappers
+	cp "${FILESDIR}"/${PNS} "${T}" || die
+	sed -e "s|@EPREFIX@|${EPREFIX}|g" -i "${T}"/${PNS} ||
+		die "Failed to patch wrapper '${T}/${PNS}'"
+	dobin "${T}"/${PNS}
+
+	# desktop
+	cp "${FILESDIR}"/${PNS}.desktop "${T}" || die
+	sed -e "s|@EPREFIX@|${EPREFIX}|g" -i "${T}"/${PNS}.desktop ||
+		die "Failed to patch desktop file '${T}/${PNS}.desktop'"
+	domenu "${T}"/${PNS}.desktop
+
+	# icons
+	newicon -s 48 opt/pt/art/app.png "${PNS}.png"
+	local ext
+	for ext in pka pkt pkz pksz; do
+		insinto /usr/share/icons/hicolor/48x48/mimetypes
+		newins opt/pt/art/${ext}.png application-x-${ext}.png
 	done
-	newmenu "${FILESDIR}/${PN}-${PV}.desktop" "${PN}.desktop"
-	dobin opt/pt/packettracer
+
+	# mime
+	insinto /usr/share/mime/packages
+	doins usr/share/mime/packages/*
+
+	# permissions & security
+	pax-mark m "${ED}"/opt/${PNS}/bin/{PacketTracer,QtWebEngineProcess}
 }
+
